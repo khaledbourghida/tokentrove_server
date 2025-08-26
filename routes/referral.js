@@ -22,10 +22,14 @@ function hash(input) {
 router.get('/:slug', async (req, res) => {
   try {
     const { slug } = req.params;
-    const ua = req.get('user-agent') || 'unknown';
-    const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '0.0.0.0';
+    const ip = 
+        req.headers['cf-connecting-ip'] ||
+        req.headers['x-real-ip'] ||
+        req.headers['x-forwarded-for'] || 
+        req.socket.remoteAddress || 
+        '0.0.0.0';
     console.log(ip)
-    const ipHash = hash(`${ip}-${ua}`);
+    const ipHash = hash(`${ip}`);
     const day = new Date().toISOString().slice(0, 10);
 
     const refDoc = db.collection('referrals').doc(slug);
@@ -34,10 +38,8 @@ router.get('/:slug', async (req, res) => {
       return res.status(404).send('Invalid referral link');
     }
 
-    const ownerUid = refSnap.data().ownerUid;
-
     // Check if visitor already claimed today
-    const claimDoc = refDoc.collection('claims').doc(`${ipHash}-${day}`);
+    const claimDoc = refDoc.collection('claims').doc(`${ipHash}`);
     const claimSnap = await claimDoc.get();
 
     if (!claimSnap.exists) {
@@ -50,7 +52,6 @@ router.get('/:slug', async (req, res) => {
       });
     }
 
-    res.redirect('https://comforting-torte-626735.netlify.app/');
   } catch (err) {
     console.error('Referral error:', err);
     res.status(500).send('Something went wrong');
