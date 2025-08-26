@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import admin from "firebase-admin";
 // import referralRoutes from "./routes/referral.js";
 import claimRoutes from "./routes/claim.js";
+import cors from 'cors';
 
 dotenv.config();
 
@@ -13,7 +14,10 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
-
+app.use(cors({
+  origin: 'https://coruscating-selkie-75aefa.netlify.app',
+  credentials: true
+}));
 // Routes
 // app.use(referralRoutes);
 app.use(claimRoutes)
