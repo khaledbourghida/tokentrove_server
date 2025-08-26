@@ -1,8 +1,12 @@
 import express from 'express'
 import admin from 'firebase-admin'
+import dotenv from 'dotenv'
+
+const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+
 
 admin.initializeApp({
-  credential: admin.credential.cert("./serviceAccountKey.json"),
+  credential: admin.credential.cert(serviceAccount),
 });
 
 const router = express.Router();
