@@ -1,16 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
-import admin from "firebase-admin";
-// import referralRoutes from "./routes/referral.js";
-import claimRoutes from "./routes/claim.js";
+import referralRoutes from "./routes/referral.js";
 import cors from 'cors';
 
 dotenv.config();
-
-// Initialize Firebase Admin with your service account
-// admin.initializeApp({
-//   credential: admin.credential.cert("./serviceAccountKey.json"),
-// });
 
 const app = express();
 app.use(express.json());
@@ -19,8 +12,7 @@ app.use(cors({
   credentials: true
 }));
 // Routes
-// app.use(referralRoutes);
-app.use(claimRoutes)
+app.use(referralRoutes);
 
 // Health check
 app.get("/", (req, res) => res.send("TokenTrove API running ✅"));
