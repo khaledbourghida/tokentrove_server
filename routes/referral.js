@@ -50,15 +50,6 @@ router.get('/:slug', async (req, res) => {
       });
     }
 
-    // Log every click (optional analytics)
-    await db.collection('referralClicks').add({
-      slug,
-      ownerUid,
-      ipHash,
-      ua,
-      createdAt: admin.firestore.FieldValue.serverTimestamp()
-    });
-
     res.redirect('https://comforting-torte-626735.netlify.app/');
   } catch (err) {
     console.error('Referral error:', err);
