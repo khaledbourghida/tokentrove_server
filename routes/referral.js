@@ -51,6 +51,8 @@ router.get('/:slug', async (req, res) => {
       });
     }
 
+    return res.status(200).send('Rewards got successfully');
+
   } catch (err) {
     console.error('Referral error:', err);
     res.status(500).send('Something went wrong');
