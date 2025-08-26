@@ -46,7 +46,6 @@ router.get('/:slug', async (req, res) => {
       // Create claim
       await claimDoc.set({
         ipHash,
-        ua,
         day,
         createdAt: admin.firestore.FieldValue.serverTimestamp()
       });
