@@ -24,6 +24,7 @@ router.get('/:slug', async (req, res) => {
     const { slug } = req.params;
     const ua = req.get('user-agent') || 'unknown';
     const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress || '0.0.0.0';
+    console.log(ip)
     const ipHash = hash(`${ip}-${ua}`);
     const day = new Date().toISOString().slice(0, 10);
 
