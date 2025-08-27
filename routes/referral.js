@@ -3,11 +3,11 @@ import express from 'express';
 import crypto from 'crypto';
 import admin from 'firebase-admin';
 
-const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+// const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
 
 
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
+  credential: admin.credential.cert('./serviceAccountKey.json'),
 });
 
 const router = express.Router();
@@ -48,6 +48,8 @@ router.get('/:slug', async (req, res) => {
     const totalVisitors = refSnap.exists ? refSnap.data().totalVisitors || 0 : 0;
     var dailyVisitors = refSnap.exists ? refSnap.data().dailyVisitors || {} : {};
 
+    dailyVisitors[day] = dailyVisitors[day] ? dailyVisitors[day] + 1 : 1
+
     if (!claimSnap.exists) {
       // Create claim
       await claimDoc.set({
@@ -62,8 +64,8 @@ router.get('/:slug', async (req, res) => {
 
       await refDoc.set({
         'totalVisitors' : totalVisitors + 1,
-        'dailyVisitors' : dailyVisitors[day] ? dailyVisitors[day] + 1 : 1
-      });
+        'dailyVisitors' : dailyVisitors
+      } , {merge : true});
     }
 
     return res.status(200).json({mssg : 'Rewards got successfully'});
