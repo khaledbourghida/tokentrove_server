@@ -39,8 +39,14 @@ router.get('/:slug', async (req, res) => {
     }
 
     // Check if visitor already claimed today
-    const claimDoc = refDoc.collection('claims').doc(`${ipHash}`);
+    const claimDoc = refDoc.collection('claims').doc(`${ipHash}-${day}`);
     const claimSnap = await claimDoc.get();
+    const userDoc = db.collection('users').doc(refSnap.data().ownerUid);
+    const userSnap = await userDoc.get();
+    
+    const totalReferralVisitors = userSnap.exists ? userSnap.data().totalReferralVisitors || 0 : 0;
+    const totalVisitors = refSnap.exists ? refSnap.data().totalVisitors || 0 : 0;
+    var dailyVisitors = refSnap.exists ? refSnap.data().dailyVisitors || {} : {};
 
     if (!claimSnap.exists) {
       // Create claim
@@ -48,6 +54,15 @@ router.get('/:slug', async (req, res) => {
         ipHash,
         day,
         createdAt: admin.firestore.FieldValue.serverTimestamp()
+      });
+
+      await userDoc.set({
+        'totalReferralVisitors' : totalReferralVisitors + 1,
+      } , {merge : true});
+
+      await refDoc.set({
+        'totalVisitors' : totalVisitors + 1,
+        'dailyVisitors' : dailyVisitors[day] ? dailyVisitors[day] + 1 : 1
       });
     }
 
